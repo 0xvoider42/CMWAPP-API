@@ -1,0 +1,43 @@
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    container_name: campaign-management-api
+    env_file:
+      - .env
+    networks:
+      - app
+    volumes:
+      - .:/app
+    command: npm run start:dev
+    ports:
+      - ${PORT:-3000}:${PORT:-3000}
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    container_name: campaign-management-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-campaign_management}
+      PGDATA: /data/postgres
+    env_file:
+      - .env
+    ports:
+      - ${DB_PORT:-5432}:${DB_PORT:-5432}
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - app
+    command: -p ${DB_PORT:-5432}
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  postgres:

@@ -9,6 +9,7 @@ import {
   UsePipes,
   UseInterceptors,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { CampaignsService } from './campaigns.service';
 import {
@@ -63,5 +64,10 @@ export class CampaignsController {
   @Patch(':id/toggle')
   async toggleStatus(@Param('id', ParseIntPipe) id: number) {
     return this.campaignsService.toggleStatus(id);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    return this.campaignsService.delete(id);
   }
 }

@@ -178,4 +178,23 @@ export class CampaignsService {
       throw error;
     }
   }
+
+  async delete(id: number): Promise<void> {
+    try {
+      await transaction(Campaign.knex(), async (trx) => {
+        const campaign = await Campaign.query(trx).findById(id);
+
+        if (!campaign) {
+          throw new NotFoundException(`Campaign with ID ${id} not found`);
+        }
+
+        await Payout.query(trx).where('campaign_id', id).delete();
+        await Campaign.query(trx).deleteById(id);
+      });
+      this.logger.info({ campaignId: id }, 'Campaign deleted successfully');
+    } catch (error) {
+      this.logger.error(error, 'Failed to delete campaign');
+      throw error;
+    }
+  }
 }

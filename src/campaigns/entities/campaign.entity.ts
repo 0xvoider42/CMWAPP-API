@@ -4,37 +4,59 @@ import { Payout } from './payout.entity';
 export class Campaign extends Model {
   static tableName = 'campaigns';
 
-  id: number;
-  title: string;
-  landing_page_url: string;
-  is_running: boolean;
+  // Properties in camelCase
+  id!: number;
+  title!: string;
+  landingPageUrl!: string;
+  isRunning!: boolean;
   description?: string;
   budget?: number;
-  daily_budget?: number;
-  created_at!: Date;
-  updated_at!: Date;
+  dailyBudget?: number;
+  createdAt!: Date;
+  updatedAt!: Date;
 
-  // Relationship with payouts
+  // Relationship property
   payouts?: Payout[];
 
-  static relationMappings = {
-    payouts: {
-      relation: Model.HasManyRelation,
-      modelClass: Payout,
-      join: {
-        from: 'campaigns.id',
-        to: 'payouts.campaign_id',
+  // JSON Schema for validation and type safety
+  static get jsonSchema() {
+    return {
+      type: 'object',
+      required: ['title', 'landingPageUrl', 'isRunning'],
+      properties: {
+        id: { type: 'integer' },
+        title: { type: 'string', minLength: 1 },
+        landingPageUrl: { type: 'string', format: 'uri' },
+        isRunning: { type: 'boolean', default: false },
+        description: { type: ['string', 'null'] },
+        budget: { type: ['number', 'null'] },
+        dailyBudget: { type: ['number', 'null'] },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
       },
-    },
-  };
+    };
+  }
 
-  // Hooks for updating timestamps
+  // Relationship definition using snake_case for database columns
+  static get relationMappings() {
+    return {
+      payouts: {
+        relation: Model.HasManyRelation,
+        modelClass: Payout,
+        join: {
+          from: 'campaigns.id',
+          to: 'payouts.campaign_id', // Use snake_case here
+        },
+      },
+    };
+  }
+
   $beforeInsert() {
-    this.created_at = new Date();
-    this.updated_at = new Date();
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
   }
 
   $beforeUpdate() {
-    this.updated_at = new Date();
+    this.updatedAt = new Date();
   }
 }

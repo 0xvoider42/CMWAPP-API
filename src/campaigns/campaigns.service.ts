@@ -24,11 +24,11 @@ export class CampaignsService {
         // Create campaign
         const campaign = await Campaign.query(trx).insert({
           title: createCampaignDto.title,
-          landing_page_url: createCampaignDto.landingPageUrl,
+          landingPageUrl: createCampaignDto.landingPageUrl,
           description: createCampaignDto.description,
           budget: createCampaignDto.budget,
-          daily_budget: createCampaignDto.dailyBudget,
-          is_running: false,
+          dailyBudget: createCampaignDto.dailyBudget,
+          isRunning: false,
         });
 
         // Create payouts
@@ -49,6 +49,7 @@ export class CampaignsService {
         { campaignId: result.id },
         'Campaign created successfully',
       );
+
       return result;
     } catch (error) {
       this.logger.error(error, 'Failed to create campaign');
@@ -75,14 +76,18 @@ export class CampaignsService {
         );
       }
       if (search?.isRunning !== undefined) {
-        query = query.where('is_running', search.isRunning);
+        query = query
+          .where('is_running', search.isRunning)
+          .select('title', 'landing_page_url', 'is_running', 'created_at');
       }
 
       const campaigns = await query;
       this.logger.info(`Found ${campaigns.length} campaigns`);
+
       return campaigns;
     } catch (error) {
       this.logger.error(error, 'Failed to fetch campaigns');
+
       throw error;
     }
   }
@@ -121,11 +126,11 @@ export class CampaignsService {
         // Update campaign
         await Campaign.query(trx).findById(id).patch({
           title: updateCampaignDto.title,
-          landing_page_url: updateCampaignDto.landingPageUrl,
-          is_running: updateCampaignDto.isRunning,
+          landingPageUrl: updateCampaignDto.landingPageUrl,
+          isRunning: updateCampaignDto.isRunning,
           description: updateCampaignDto.description,
           budget: updateCampaignDto.budget,
-          daily_budget: updateCampaignDto.dailyBudget,
+          dailyBudget: updateCampaignDto.dailyBudget,
         });
 
         // Update payouts if provided
@@ -163,12 +168,12 @@ export class CampaignsService {
 
       const updatedCampaign = await Campaign.query()
         .patchAndFetchById(id, {
-          is_running: !campaign.is_running,
+          isRunning: !campaign.isRunning,
         })
         .withGraphFetched('payouts');
 
       this.logger.info(
-        { campaignId: id, status: updatedCampaign.is_running },
+        { campaignId: id, status: updatedCampaign.isRunning },
         'Campaign status toggled',
       );
 

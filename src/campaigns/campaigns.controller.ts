@@ -37,13 +37,13 @@ export class CampaignsController {
   @Get()
   async findAll(
     @Query('title') title?: string,
-    @Query('landingPageUrl') landingPageUrl?: string,
-    @Query('isRunning') isRunning?: boolean,
+    @Query('landingPageUrl') landing_page_url?: string,
+    @Query('isRunning') is_running?: boolean,
   ) {
     return this.campaignsService.findAll({
       title,
-      landingPageUrl,
-      isRunning,
+      landing_page_url,
+      is_running,
     });
   }
 

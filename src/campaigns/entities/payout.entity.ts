@@ -6,13 +6,13 @@ export class Payout extends Model {
 
   // Properties in camelCase as they'll be used in your code
   id!: number;
-  campaignId!: number;
+  campaign_id!: number;
   country!: string;
   amount!: number;
   currency!: string;
-  isActive!: boolean;
-  createdAt!: Date;
-  updatedAt!: Date;
+  is_active!: boolean;
+  created_at!: Date;
+  updated_at!: Date;
 
   // Optional relation
   campaign?: Campaign;
@@ -21,16 +21,16 @@ export class Payout extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['campaignId', 'country', 'amount', 'currency'],
+      required: ['campaign_id', 'country', 'amount', 'currency'],
       properties: {
         id: { type: 'integer' },
-        campaignId: { type: 'integer' },
+        campaign_id: { type: 'integer' },
         country: { type: 'string' },
         amount: { type: 'number' },
         currency: { type: 'string' },
-        isActive: { type: 'boolean', default: true },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
+        is_active: { type: 'boolean', default: true },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' },
       },
     };
   }
@@ -50,11 +50,11 @@ export class Payout extends Model {
   }
 
   $beforeInsert() {
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.created_at = new Date();
+    this.updated_at = new Date();
   }
 
   $beforeUpdate() {
-    this.updatedAt = new Date();
+    this.updated_at = new Date();
   }
 }

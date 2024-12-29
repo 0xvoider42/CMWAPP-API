@@ -7,13 +7,13 @@ export class Campaign extends Model {
   // Properties in camelCase
   id!: number;
   title!: string;
-  landingPageUrl!: string;
-  isRunning!: boolean;
+  landing_page_url!: string;
+  is_running!: boolean;
   description?: string;
   budget?: number;
-  dailyBudget?: number;
-  createdAt!: Date;
-  updatedAt!: Date;
+  daily_budget?: number;
+  created_at!: Date;
+  updated_at!: Date;
 
   // Relationship property
   payouts?: Payout[];
@@ -22,17 +22,17 @@ export class Campaign extends Model {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['title', 'landingPageUrl', 'isRunning'],
+      required: ['title', 'landing_page_url', 'is_running'],
       properties: {
         id: { type: 'integer' },
         title: { type: 'string', minLength: 1 },
-        landingPageUrl: { type: 'string', format: 'uri' },
-        isRunning: { type: 'boolean', default: false },
+        landing_page_url: { type: 'string', format: 'uri' },
+        is_running: { type: 'boolean', default: false },
         description: { type: ['string', 'null'] },
         budget: { type: ['number', 'null'] },
-        dailyBudget: { type: ['number', 'null'] },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
+        daily_budget: { type: ['number', 'null'] },
+        created_at: { type: 'string', format: 'date-time' },
+        updated_at: { type: 'string', format: 'date-time' },
       },
     };
   }
@@ -45,18 +45,18 @@ export class Campaign extends Model {
         modelClass: Payout,
         join: {
           from: 'campaigns.id',
-          to: 'payouts.campaign_id', // Use snake_case here
+          to: 'payouts.campaign_id',
         },
       },
     };
   }
 
   $beforeInsert() {
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.created_at = new Date();
+    this.updated_at = new Date();
   }
 
   $beforeUpdate() {
-    this.updatedAt = new Date();
+    this.updated_at = new Date();
   }
 }

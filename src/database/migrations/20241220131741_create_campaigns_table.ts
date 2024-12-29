@@ -12,7 +12,6 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
 
-    // Add indexes for search optimization
     table.index(['title']);
     table.index(['landing_page_url']);
     table.index(['is_running']);

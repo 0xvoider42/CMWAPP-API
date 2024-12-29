@@ -2,11 +2,11 @@ import * as Joi from 'joi';
 
 export class UpdateCampaignDto {
   title?: string;
-  landingPageUrl?: string;
-  isRunning?: boolean;
+  landing_page_url?: string;
+  is_running?: boolean;
   description?: string;
   budget?: number;
-  dailyBudget?: number;
+  daily_budget?: number;
   payouts?: Array<{
     country: string;
     amount: number;

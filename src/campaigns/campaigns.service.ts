@@ -24,11 +24,11 @@ export class CampaignsService {
         // Create campaign
         const campaign = await Campaign.query(trx).insert({
           title: createCampaignDto.title,
-          landingPageUrl: createCampaignDto.landingPageUrl,
+          landing_page_url: createCampaignDto.landingPageUrl,
           description: createCampaignDto.description,
           budget: createCampaignDto.budget,
-          dailyBudget: createCampaignDto.dailyBudget,
-          isRunning: false,
+          daily_budget: createCampaignDto.dailyBudget,
+          is_running: false,
         });
 
         // Create payouts
@@ -46,7 +46,7 @@ export class CampaignsService {
       });
 
       this.logger.info(
-        { campaignId: result.id },
+        { campaign_id: result.id },
         'Campaign created successfully',
       );
 
@@ -59,26 +59,32 @@ export class CampaignsService {
 
   async findAll(search?: {
     title?: string;
-    landingPageUrl?: string;
-    isRunning?: boolean;
+    landing_page_url?: string;
+    is_running?: boolean;
   }): Promise<Campaign[]> {
     try {
-      let query = Campaign.query().withGraphFetched('payouts');
+      let query = Campaign.query()
+        .withGraphFetched('payouts')
+        .select([
+          'id',
+          'title',
+          'landing_page_url as landingPageUrl',
+          'is_running as isRunning',
+          'created_at as created_at',
+        ]);
 
       if (search?.title) {
         query = query.where('title', 'ilike', `%${search.title}%`);
       }
-      if (search?.landingPageUrl) {
+      if (search?.landing_page_url) {
         query = query.where(
           'landing_page_url',
           'ilike',
-          `%${search.landingPageUrl}%`,
+          `%${search.landing_page_url}%`,
         );
       }
-      if (search?.isRunning !== undefined) {
-        query = query
-          .where('is_running', search.isRunning)
-          .select('title', 'landing_page_url', 'is_running', 'created_at');
+      if (search?.is_running !== undefined) {
+        query = query.where('is_running', search.is_running);
       }
 
       const campaigns = await query;
@@ -96,14 +102,25 @@ export class CampaignsService {
     try {
       const campaign = await Campaign.query()
         .findById(id)
+        .select([
+          'id',
+          'title',
+          'landing_page_url as landingPageUrl',
+          'is_running as isRunning',
+          'description',
+          'budget',
+          'daily_budget as dailyBudget',
+          'created_at as created_at',
+          'updated_at as updatedAt',
+        ])
         .withGraphFetched('payouts');
 
       if (!campaign) {
-        this.logger.warn({ campaignId: id }, 'Campaign not found');
+        this.logger.warn({ campaign_id: id }, 'Campaign not found');
         throw new NotFoundException(`Campaign with ID ${id} not found`);
       }
 
-      this.logger.info({ campaignId: id }, 'Campaign found');
+      this.logger.info({ campaign_id: id }, 'Campaign found');
       return campaign;
     } catch (error) {
       this.logger.error(error, 'Failed to fetch campaign');
@@ -117,20 +134,18 @@ export class CampaignsService {
   ): Promise<Campaign> {
     try {
       const result = await transaction(Campaign.knex(), async (trx) => {
-        // Check if campaign exists
         const campaign = await Campaign.query(trx).findById(id);
         if (!campaign) {
           throw new NotFoundException(`Campaign with ID ${id} not found`);
         }
 
-        // Update campaign
         await Campaign.query(trx).findById(id).patch({
           title: updateCampaignDto.title,
-          landingPageUrl: updateCampaignDto.landingPageUrl,
-          isRunning: updateCampaignDto.isRunning,
+          landing_page_url: updateCampaignDto.landing_page_url,
+          is_running: updateCampaignDto.is_running,
           description: updateCampaignDto.description,
           budget: updateCampaignDto.budget,
-          dailyBudget: updateCampaignDto.dailyBudget,
+          daily_budget: updateCampaignDto.daily_budget,
         });
 
         // Update payouts if provided
@@ -149,7 +164,7 @@ export class CampaignsService {
         return Campaign.query(trx).findById(id).withGraphFetched('payouts');
       });
 
-      this.logger.info({ campaignId: id }, 'Campaign updated successfully');
+      this.logger.info({ campaign_id: id }, 'Campaign updated successfully');
       return result;
     } catch (error) {
       this.logger.error(error, 'Failed to update campaign');
@@ -162,18 +177,18 @@ export class CampaignsService {
       const campaign = await Campaign.query().findById(id);
 
       if (!campaign) {
-        this.logger.warn({ campaignId: id }, 'Campaign not found');
+        this.logger.warn({ campaign_id: id }, 'Campaign not found');
         throw new NotFoundException(`Campaign with ID ${id} not found`);
       }
 
       const updatedCampaign = await Campaign.query()
         .patchAndFetchById(id, {
-          isRunning: !campaign.isRunning,
+          is_running: !campaign.is_running,
         })
         .withGraphFetched('payouts');
 
       this.logger.info(
-        { campaignId: id, status: updatedCampaign.isRunning },
+        { campaign_id: id, status: updatedCampaign.is_running },
         'Campaign status toggled',
       );
 
@@ -196,7 +211,7 @@ export class CampaignsService {
         await Payout.query(trx).where('campaign_id', id).delete();
         await Campaign.query(trx).deleteById(id);
       });
-      this.logger.info({ campaignId: id }, 'Campaign deleted successfully');
+      this.logger.info({ campaign_id: id }, 'Campaign deleted successfully');
     } catch (error) {
       this.logger.error(error, 'Failed to delete campaign');
       throw error;

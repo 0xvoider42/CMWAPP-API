@@ -3,7 +3,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-      target: builder
+      target: development
     container_name: campaign-management-api
     env_file:
       - .env

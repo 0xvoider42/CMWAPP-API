@@ -1,13 +1,17 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS development
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files
+COPY --chown=node:node package*.json ./
+
+# Install dependencies
 RUN npm ci
 
-COPY . .
-RUN npm run build
+COPY --chown=node:node . .
+
+USER node
 
 # Production stage
 FROM node:18-alpine

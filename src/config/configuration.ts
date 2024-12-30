@@ -4,7 +4,7 @@ export default registerAs('config', () => ({
   database: {
     client: 'postgresql',
     connection: {
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST || 'postgres',
       port: parseInt(process.env.DB_PORT, 10) || 5432,
       database: process.env.DB_NAME || 'campaign_management',
       user: process.env.DB_USER || 'postgres',

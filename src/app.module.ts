@@ -4,8 +4,12 @@ import { CampaignsModule } from './campaigns/campaigns.module';
 import { Model } from 'objection';
 import * as Knex from 'knex';
 import configuration from './config/configuration';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
+  controllers: [AppController],
+  providers: [AppService],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,

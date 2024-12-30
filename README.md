@@ -1,9 +1,8 @@
 # Campaign Management API
-
 A robust campaign management system built with NestJS, TypeScript, and PostgreSQL.
+The application is deployed: https://cmwapp-8gqmpqm26-nicks-projects-0a3a799c.vercel.app/
 
 ## 🚀 Features
-
 - RESTful API endpoints for campaign management
 - Built with TypeScript for type safety
 - PostgreSQL database with Knex ORM
@@ -11,13 +10,11 @@ A robust campaign management system built with NestJS, TypeScript, and PostgreSQ
 - Database migrations system
 
 ## 📋 Prerequisites
-
 - Node.js
 - Docker and Docker Compose
 - npm package manager
 
 ## 🛠️ Installation
-
 1. Clone the repository:
    ```bash
    git clone [repository-url]
@@ -36,11 +33,9 @@ A robust campaign management system built with NestJS, TypeScript, and PostgreSQ
    npm run migrate
    ```
 ## 🏃‍♂️ Running the Application
-
 The application will be available at http://localhost:3000 (or your configured port).
 
 ## 🔧 Configuration
-
 The application can be configured through environment variables. Create a .env file in the root directory and follow the structure in the .env.example:
    ```env
    DB_HOST=localhost

@@ -1,17 +1,13 @@
 # Build stage
-FROM node:18-alpine AS development
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY --chown=node:node package*.json ./
-
-# Install dependencies
+COPY package*.json ./
 RUN npm ci
 
-COPY --chown=node:node . .
-
-USER node
+COPY . .
+RUN npm run build
 
 # Production stage
 FROM node:18-alpine
@@ -21,7 +17,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-COPY --from=development /app/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 

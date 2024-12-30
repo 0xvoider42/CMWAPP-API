@@ -70,7 +70,7 @@ export class CampaignsService {
           'title',
           'landing_page_url as landingPageUrl',
           'is_running as isRunning',
-          'created_at as created_at',
+          'created_at as createdAt',
         ]);
 
       if (search?.title) {
@@ -110,7 +110,7 @@ export class CampaignsService {
           'description',
           'budget',
           'daily_budget as dailyBudget',
-          'created_at as created_at',
+          'created_at as createdAt',
           'updated_at as updatedAt',
         ])
         .withGraphFetched('payouts');

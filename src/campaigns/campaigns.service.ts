@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { transaction } from 'objection';
+import pino from 'pino';
+
 import { Campaign } from './entities/campaign.entity';
 import { Payout } from './entities/payout.entity';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
-import pino from 'pino';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 
 @Injectable()

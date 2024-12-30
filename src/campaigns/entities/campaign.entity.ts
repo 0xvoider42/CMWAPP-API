@@ -1,4 +1,5 @@
 import { Model } from 'objection';
+
 import { Payout } from './payout.entity';
 
 export class Campaign extends Model {

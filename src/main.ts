@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import pino from 'pino';
+
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const logger = pino({

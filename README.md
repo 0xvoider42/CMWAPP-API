@@ -50,6 +50,7 @@ The application can be configured through environment variables. Create a .env f
    DB_PASSWORD=postgres
    NODE_ENV=development
    LOG_LEVEL=debug
+   PORT=2222
    ```
 
 ## 🧪 Running Tests

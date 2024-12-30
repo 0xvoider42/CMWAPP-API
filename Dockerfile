@@ -1,21 +1,24 @@
 # Build stage
-FROM node:18-alpine AS development
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY --chown=node:node package*.json ./
-
-# Install dependencies
+COPY package*.json ./
 RUN npm ci
 
-COPY --chown=node:node . .
-
-# Creates a "dist" folder with the production build
+COPY . .
 RUN npm run build
 
-# Expose the port on which the app will run
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
-# Start the server using the production build
 CMD ["npm", "run", "start:prod"]

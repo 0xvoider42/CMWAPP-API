@@ -21,6 +21,7 @@ services:
     image: postgres
     container_name: campaign-management-db
     environment:
+      POSTGRES_HOST: ${DB_HOST:-postgres}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-campaign_management}

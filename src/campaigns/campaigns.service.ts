@@ -7,6 +7,11 @@ import { Payout } from './entities/payout.entity';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
 import { UpdateCampaignDto } from './dto/update-campaign.dto';
 
+export interface CampaignStats {
+  activeCampaigns: number;
+  conversionRate: number;
+}
+
 @Injectable()
 export class CampaignsService {
   private logger = pino({
@@ -149,12 +154,9 @@ export class CampaignsService {
           daily_budget: updateCampaignDto.daily_budget,
         });
 
-        // Update payouts if provided
         if (updateCampaignDto.payouts) {
-          // Delete existing payouts
           await Payout.query(trx).where('campaign_id', id).delete();
 
-          // Create new payouts
           const payouts = updateCampaignDto.payouts.map((payout) => ({
             campaign_id: id,
             ...payout,
@@ -215,6 +217,30 @@ export class CampaignsService {
       this.logger.info({ campaign_id: id }, 'Campaign deleted successfully');
     } catch (error) {
       this.logger.error(error, 'Failed to delete campaign');
+      throw error;
+    }
+  }
+
+  async getStats(): Promise<CampaignStats> {
+    try {
+      const activeCampaigns = await Campaign.query()
+        .where('is_running', true)
+        .resultSize();
+
+      const totalCampaigns = await Campaign.query().resultSize();
+
+      const conversionRate =
+        totalCampaigns > 0 ? (activeCampaigns / totalCampaigns) * 100 : 0;
+
+      const stats: CampaignStats = {
+        activeCampaigns,
+        conversionRate: Number(conversionRate.toFixed(2)),
+      };
+
+      this.logger.info('Campaign stats retrieved successfully');
+      return stats;
+    } catch (error) {
+      this.logger.error(error, 'Failed to fetch campaign stats');
       throw error;
     }
   }

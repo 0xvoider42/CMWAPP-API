@@ -1,6 +1,6 @@
 # Campaign Management API
 A robust campaign management system built with NestJS, TypeScript, and PostgreSQL.
-The application is deployed: https://cmwapp-8gqmpqm26-nicks-projects-0a3a799c.vercel.app/
+The application is deployed: https://cmwapp-fe.vercel.app/
 
 ## 🚀 Features
 - RESTful API endpoints for campaign management

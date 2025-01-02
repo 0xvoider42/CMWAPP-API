@@ -48,6 +48,11 @@ export class CampaignsController {
     });
   }
 
+  @Get('stats')
+  async getStats() {
+    return this.campaignsService.getStats();
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.campaignsService.findOne(id);

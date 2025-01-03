@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('path');
-const configuration = require('./dist/config/configuration').default();
+const configuration = require('./dist/config/configuration.js').default();
 
 module.exports = {
   client: configuration.database.client,

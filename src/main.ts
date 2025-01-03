@@ -21,7 +21,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS
-  app.enableCors();
+  app.enableCors({
+    origin: 'https://cmwapp-fe.vercel.app',
+  });
 
   // Global prefix
   app.setGlobalPrefix('api-v1');

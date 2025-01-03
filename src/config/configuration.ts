@@ -19,4 +19,8 @@ export default registerAs('config', () => ({
     level: process.env.LOG_LEVEL || 'info',
     prettyPrint: process.env.NODE_ENV !== 'production',
   },
+  jwt: {
+    secret: process.env.JWT_SECRET || 'super-secret',
+    expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+  },
 }));

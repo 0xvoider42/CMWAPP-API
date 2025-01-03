@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Install netcat for database connection checking and dos2unix
 RUN apk add --no-cache netcat-openbsd dos2unix
@@ -20,8 +20,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production
+# For development, install all dependencies including devDependencies
+RUN npm ci
 
 # Copy source code and built assets
 COPY . .

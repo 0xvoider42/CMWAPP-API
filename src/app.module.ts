@@ -7,6 +7,7 @@ import { CampaignsModule } from './campaigns/campaigns.module';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   controllers: [AppController],
@@ -16,6 +17,7 @@ import { AppService } from './app.service';
       isGlobal: true,
       load: [configuration],
     }),
+    AuthModule,
     CampaignsModule,
   ],
 })

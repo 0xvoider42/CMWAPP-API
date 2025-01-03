@@ -1,18 +1,26 @@
 import { knexSnakeCaseMappers } from 'objection';
-import configuration from '../config/configuration';
 
-const config = configuration();
-
-export default {
-  client: config.database.client,
-  connection: config.database.connection,
-  pool: config.database.pool,
+const config = {
+  client: 'postgresql',
+  connection: {
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    database: process.env.DB_NAME || 'campaign_management',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres',
+  },
+  pool: {
+    min: 2,
+    max: 10,
+  },
   migrations: {
-    directory: './migrations',
-    tableName: 'knex_migrations',
+    tableName: 'migrations',
+    directory: 'migrations',
   },
   seeds: {
     directory: './seeds',
   },
   ...knexSnakeCaseMappers(),
 };
+
+module.exports = config;

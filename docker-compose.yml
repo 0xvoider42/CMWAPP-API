@@ -3,7 +3,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-      target: builder
     container_name: campaign-management-api
     env_file:
       - .env
@@ -11,11 +10,12 @@ services:
       - app
     volumes:
       - .:/app
-    command: npm run start:dev
+      - /app/node_modules
     ports:
       - ${PORT:-3000}:${PORT:-3000}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres
@@ -34,6 +34,11 @@ services:
     networks:
       - app
     command: -p ${DB_PORT:-5432}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 networks:
   app:

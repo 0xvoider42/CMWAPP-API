@@ -24,7 +24,10 @@ export class CampaignsService {
     },
   });
 
-  async create(createCampaignDto: CreateCampaignDto): Promise<Campaign> {
+  async create(
+    createCampaignDto: CreateCampaignDto,
+    userId: number,
+  ): Promise<Campaign> {
     try {
       const result = await transaction(Campaign.knex(), async (trx) => {
         // Create campaign
@@ -35,6 +38,7 @@ export class CampaignsService {
           budget: createCampaignDto.budget,
           daily_budget: createCampaignDto.dailyBudget,
           is_running: false,
+          user_id: userId,
         });
 
         // Create payouts
@@ -67,6 +71,7 @@ export class CampaignsService {
     title?: string;
     landing_page_url?: string;
     is_running?: boolean;
+    user_id?: number;
   }): Promise<Campaign[]> {
     try {
       let query = Campaign.query()
@@ -77,11 +82,13 @@ export class CampaignsService {
           'landing_page_url as landingPageUrl',
           'is_running as isRunning',
           'created_at as createdAt',
+          'user_id',
         ]);
 
       if (search?.title) {
         query = query.where('title', 'ilike', `%${search.title}%`);
       }
+
       if (search?.landing_page_url) {
         query = query.where(
           'landing_page_url',
@@ -89,8 +96,13 @@ export class CampaignsService {
           `%${search.landing_page_url}%`,
         );
       }
+
       if (search?.is_running !== undefined) {
         query = query.where('is_running', search.is_running);
+      }
+
+      if (search?.user_id) {
+        query = query.where('user_id', search.user_id);
       }
 
       const campaigns = await query;
@@ -99,14 +111,13 @@ export class CampaignsService {
       return campaigns;
     } catch (error) {
       this.logger.error(error, 'Failed to fetch campaigns');
-
       throw error;
     }
   }
 
-  async findOne(id: number): Promise<Campaign> {
+  async findOne(id: number, userId?: number): Promise<Campaign> {
     try {
-      const campaign = await Campaign.query()
+      let query = Campaign.query()
         .findById(id)
         .select([
           'id',
@@ -118,8 +129,15 @@ export class CampaignsService {
           'daily_budget as dailyBudget',
           'created_at as createdAt',
           'updated_at as updatedAt',
+          'user_id',
         ])
         .withGraphFetched('payouts');
+
+      if (userId) {
+        query = query.where('user_id', userId);
+      }
+
+      const campaign = await query;
 
       if (!campaign) {
         this.logger.warn({ campaign_id: id }, 'Campaign not found');
@@ -137,10 +155,18 @@ export class CampaignsService {
   async update(
     id: number,
     updateCampaignDto: UpdateCampaignDto,
+    userId: number,
   ): Promise<Campaign> {
     try {
       const result = await transaction(Campaign.knex(), async (trx) => {
-        const campaign = await Campaign.query(trx).findById(id);
+        let query = Campaign.query(trx);
+
+        if (userId) {
+          query = query.where('user_id', userId);
+        }
+
+        const campaign = await query.findById(id);
+
         if (!campaign) {
           throw new NotFoundException(`Campaign with ID ${id} not found`);
         }
@@ -202,10 +228,16 @@ export class CampaignsService {
     }
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userId: number): Promise<void> {
     try {
       await transaction(Campaign.knex(), async (trx) => {
-        const campaign = await Campaign.query(trx).findById(id);
+        let query = Campaign.query(trx).findById(id);
+
+        if (userId) {
+          query = query.where('user_id', userId);
+        }
+
+        const campaign = await query;
 
         if (!campaign) {
           throw new NotFoundException(`Campaign with ID ${id} not found`);

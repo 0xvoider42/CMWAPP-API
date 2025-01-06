@@ -1,12 +1,14 @@
 import { Model } from 'objection';
 
 import { Payout } from './payout.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class Campaign extends Model {
   static tableName = 'campaigns';
 
   // Properties in camelCase
   id!: number;
+  user_id!: number;
   title!: string;
   landing_page_url!: string;
   is_running!: boolean;
@@ -41,6 +43,14 @@ export class Campaign extends Model {
   // Relationship definition using snake_case for database columns
   static get relationMappings() {
     return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: 'campaigns.user_id',
+          to: 'users.id',
+        },
+      },
       payouts: {
         relation: Model.HasManyRelation,
         modelClass: Payout,

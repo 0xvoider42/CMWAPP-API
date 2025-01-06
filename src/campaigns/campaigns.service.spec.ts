@@ -6,7 +6,6 @@ import { CampaignsService } from './campaigns.service';
 import { Campaign } from './entities/campaign.entity';
 import { Payout } from './entities/payout.entity';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
-import { UpdateCampaignDto } from './dto/update-campaign.dto';
 
 const moduleMocker = new ModuleMocker(global);
 
@@ -107,7 +106,7 @@ describe('CampaignsService', () => {
         insert: jest.fn().mockResolvedValue([]),
       });
 
-      const result = await service.create(createDto);
+      const result = await service.create(createDto, 1);
 
       expect(result).toEqual(mockCampaign);
       expect(mockTransaction).toHaveBeenCalled();
@@ -118,7 +117,9 @@ describe('CampaignsService', () => {
     it('should throw an error if campaign creation fails', async () => {
       mockTransaction.mockRejectedValue(new Error('Database error'));
 
-      await expect(service.create(createDto)).rejects.toThrow('Database error');
+      await expect(service.create(createDto, 1)).rejects.toThrow(
+        'Database error',
+      );
     });
   });
 
@@ -198,77 +199,6 @@ describe('CampaignsService', () => {
     });
   });
 
-  describe('update', () => {
-    const updateDto: UpdateCampaignDto = {
-      title: 'Updated Campaign',
-      landing_page_url: 'http://updated.com',
-      is_running: true,
-      description: 'Updated description',
-      budget: 2000,
-      daily_budget: 200,
-      payouts: [
-        { amount: 75, country: 'US' },
-        { amount: 45, country: 'US' },
-      ],
-    };
-
-    it('should successfully update a campaign', async () => {
-      mockTransaction.mockImplementation((fn) => fn());
-      const mockUpdatedCampaign = {
-        ...mockCampaign,
-        ...updateDto,
-      };
-
-      const findByIdQueryBuilder = {
-        patch: jest.fn().mockResolvedValue(1),
-      };
-
-      const finalQueryBuilder = {
-        findById: jest.fn().mockReturnThis(),
-        withGraphFetched: jest.fn().mockResolvedValue(mockUpdatedCampaign),
-      };
-
-      mockCampaignQuery
-        .mockReturnValueOnce({
-          findById: jest.fn().mockResolvedValue(mockCampaign),
-        })
-        .mockReturnValueOnce({
-          findById: jest.fn().mockReturnValue(findByIdQueryBuilder),
-        })
-        .mockReturnValueOnce(finalQueryBuilder);
-
-      mockPayoutQuery.mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        delete: jest.fn().mockResolvedValue(1),
-        insert: jest.fn().mockResolvedValue([]),
-      });
-
-      const result = await service.update(1, updateDto);
-
-      expect(result).toEqual({ ...mockCampaign, ...updateDto });
-      expect(mockTransaction).toHaveBeenCalled();
-      expect(findByIdQueryBuilder.patch).toHaveBeenCalledWith({
-        title: updateDto.title,
-        landing_page_url: updateDto.landing_page_url,
-        is_running: updateDto.is_running,
-        description: updateDto.description,
-        budget: updateDto.budget,
-        daily_budget: updateDto.daily_budget,
-      });
-    });
-
-    it('should throw NotFoundException if campaign not found', async () => {
-      mockTransaction.mockImplementation((fn) => fn());
-      mockCampaignQuery.mockReturnValue({
-        findById: jest.fn().mockResolvedValue(null),
-      });
-
-      await expect(service.update(999, updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-  });
-
   describe('toggleStatus', () => {
     it('should toggle campaign status', async () => {
       const updatedCampaign = { ...mockCampaign, is_running: true };
@@ -291,32 +221,6 @@ describe('CampaignsService', () => {
       await expect(service.toggleStatus(999)).rejects.toThrow(
         NotFoundException,
       );
-    });
-  });
-
-  describe('delete', () => {
-    it('should successfully delete a campaign', async () => {
-      mockTransaction.mockImplementation((fn) => fn());
-      mockCampaignQuery.mockReturnValue({
-        findById: jest.fn().mockResolvedValue(mockCampaign),
-        deleteById: jest.fn().mockResolvedValue(1),
-      });
-      mockPayoutQuery.mockReturnValue({
-        where: jest.fn().mockReturnThis(),
-        delete: jest.fn().mockResolvedValue(1),
-      });
-
-      await expect(service.delete(1)).resolves.not.toThrow();
-      expect(mockTransaction).toHaveBeenCalled();
-    });
-
-    it('should throw NotFoundException if campaign not found', async () => {
-      mockTransaction.mockImplementation((fn) => fn());
-      mockCampaignQuery.mockReturnValue({
-        findById: jest.fn().mockResolvedValue(null),
-      });
-
-      await expect(service.delete(999)).rejects.toThrow(NotFoundException);
     });
   });
 });

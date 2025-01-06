@@ -35,14 +35,15 @@ The application will be available at http://localhost:3000 (or your configured p
 ## 🔧 Configuration
 The application can be configured through environment variables. Create a .env file in the root directory and follow the structure in the .env.example:
    ```env
-   DB_HOST=localhost
+   DB_HOST=postgres
    DB_PORT=5432
    DB_NAME=campaign_management
    DB_USER=postgres
    DB_PASSWORD=postgres
    NODE_ENV=development
-   LOG_LEVEL=debug
    PORT=2222
+   JWT_SECRET=super-secret-key
+   JWT_EXPIRES_IN='1d'
    ```
 
 ## 🧪 Running Tests

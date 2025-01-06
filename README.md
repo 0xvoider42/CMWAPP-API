@@ -8,6 +8,7 @@ The application is deployed: https://cmwapp-fe.vercel.app/
 - PostgreSQL database with Knex ORM
 - Containerized with Docker for easy deployment
 - Database migrations system
+- Role-based system, to access all features register as `admin`
 
 ## 📋 Prerequisites
 - Node.js

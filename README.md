@@ -25,13 +25,9 @@ The application is deployed: https://cmwapp-fe.vercel.app/
    ```bash
    npm install
    ```
-3. Start the containers:
+3. Start the containers and run latest migrations:
    ```bash
    docker compose up
-   ```
-4. Run database migrations:
-   ```bash
-   npm run migrate
    ```
 ## 🏃‍♂️ Running the Application
 The application will be available at http://localhost:3000 (or your configured port).
